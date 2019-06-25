@@ -1,3 +1,9 @@
 <resources>
-    <string name="app_name">android-realtime-quiz</string>
+    <string name="app_name">realtime-quiz</string>
+
+    <!-- Join Activity -->
+    <string name="inputNickname">닉네임을 입력하세요.</string>
+    <string name="startGame">게임 시작!</string>
+    <string name="reInput">다시 입력해주세요.</string>
+
 </resources>
