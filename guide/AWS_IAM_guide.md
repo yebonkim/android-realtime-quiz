@@ -116,7 +116,7 @@
 
 ---
 
-아래와 같이 역할 이름에 [android-realtime-policy]라고 적은 후 [역할 만들기] 버튼을 눌러주세요.
+아래와 같이 역할 이름에 [android-realtime-role]라고 적은 후 [역할 만들기] 버튼을 눌러주세요.
 
 ![그림](../images/iam/10.png)
 

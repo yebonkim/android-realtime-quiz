@@ -195,7 +195,7 @@ Lambda 함수에서 [android-realtime-lambda]를 입력, 선택해주세요.
 
 하단의 [저장] 버튼을 눌러주세요.
 
-![그림](../images/connection/12.png)
+![그림](../images/connection/12_1.png)
 
 다음 대화상자에서도 [확인] 버튼을 눌러주세요.
 
