@@ -1,6 +1,6 @@
 # android-realtime-quiz🥳
 
-## Websock연결 기능 만들기
+## Websocket연결 기능 만들기
 
 이번 파트에서는 Websocket의 connection을 관리하는 lambda함수를 올리고 API Gateway에 연결시켜보도록 하겠습니다.
 
@@ -221,12 +221,13 @@ API Gateway와 Lambda의 연결이 끝났습니다!
 
 배포가 완료되어 엔드포인트가 생성되었습니다! 이제 웹소켓을 테스트 해볼 수 있습니다!
 
-### Websock연결 기능 만들기가 끝났습니다!
-#### Websocket 게임 및 채팅 기능 만들기를 진행해주세요.😀
+### Websocket연결 기능 만들기가 끝났습니다!
+#### Websocket 테스트를 진행해주세요.😀
 
 
 - [AWS IAM 역할(Role) 만들기](https://github.com/yebonkim/android-realtime-quiz/blob/master/guide/AWS_IAM_guide.md)
 - [DynamoDB 생성하기](https://github.com/yebonkim/android-realtime-quiz/blob/master/guide/AWS_DynamoDB_guide.md)
 - [Websocket 연결 기능 만들기](https://github.com/yebonkim/android-realtime-quiz/blob/master/guide/AWS_websocket_connection_guide.md)
+- [Websocket 테스트](https://github.com/yebonkim/android-realtime-quiz/blob/master/guide/AWS_websocket_test_guide.md)
 - [Websocket 게임 및 채팅 기능 만들기](https://github.com/yebonkim/android-realtime-quiz/blob/master/guide/AWS_websocket_guide.md)
 - [Android 서비스에 연결하기](https://github.com/yebonkim/android-realtime-quiz/blob/master/guide/Android_guide.md)
