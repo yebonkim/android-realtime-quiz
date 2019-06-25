@@ -1,46 +1,102 @@
 # android-realtime-quiz🥳
 
-#### 본 세션은 AWS 서비스들을 이용하여 아래의 언어로 Websocket 실시간 안드로이드 초성퀴즈 앱을 만들어봅니다.
-- 람다 서버 : Node.js
-- 안드로이드 클라이언트 : Java
+## AWS DynamoDB 생성하기
+
+본 세션에서는 아래와 같이 총 3개의 DynamoDB를 사용합니다. 때문에 미리 Table을 만들어 주도록 하겠습니다.
+
+### [User] table
+Game과 Chat 데이터 Broadcast를 위해서 Websocket connectionId를 저장합니다.
+
+- Partition Key : connectionId
+
+![그림](../images/dynamo/1.png)
+
+### [Chat] table
+Chat 데이터를 저장하기 위한 테이블입니다.
+
+- partition Key : timestamp
+
+![그림](../images/dynamo/2.png)
+
+### [Game] table
+Game 데이터를 저장하기 위한 테이블입니다. 현재 문제 초성, 현재 문제 index, 이미 나온 정답 등을 저장합니다. 
+
+- partition Key : id
+
+![그림](../images/dynamo/3.png)
 
 ---
 
-### 해당 세션을 진행하기 위해서는 아래와 같은 것들이 필요합니다.
+### 1. AWS DynamoDB 접속
 
-#### 1. AWS 계정
+아래와 같이 AWS console에 접속하여 'dy'를 검색 후 DynamoDB 서비스로 접속합니다.
 
-AWS 서비스를 사용하여 서버를 구축하기 때문에 AWS 계정이 필요합니다.
+![그림](../images/dynamo/4.png)
 
-- AWS 계정 만들기 [이동](https://aws.amazon.com/ko/)
+### 2. Table 생성
 
-본 세션에서는 아래와 같은 서비스를 이용합니다.
-~~~
-- AWS IAM
-- AWS APIGateway
-- AWS Lambda
-- AWS DynamoDB
-~~~
+아래와 같은 화면이 뜨면 [테이블 만들기]를 눌러줍니다.
 
-본 세션의 일환으로 시작하는 모든 리소스는 AWS 계정이 12개월 미만인 경우, 제공하는 AWS 프리티어로 충분히 가능합니다. 프리티어를 넘어서는 경우, 과금 될 수도 있습니다. 따라서, 새로운 실습용 계정을 만드시길 권장합니다. 자세한 내용은 [AWS 프리 티어 페이지](https://aws.amazon.com/free/)를 참조하세요.
+![그림](../images/dynamo/5.png)
 
 ---
 
-#### 2. Android Studio
+**[User] Table**을 먼저 생성해 보겠습니다.
 
-본 세션은 안드로이드 어플리케이션을 통해 클라이언트를 구현하기 때문에 Android Studio 및 Android SDK등이 필요합니다. 
+#### 지금부터의 작업은 대소문자를 구분하므로 대소문자에 유의해주세요!
 
-- Android Studio 설치 가이드 [이동](https://github.com/AUSG/ausg-seminar-2019/tree/master/AndroidTrack/preparation)
+아래와 같이
 
-또한 본 세션에서는 Android SDK 28 Version을 타겟으로 하고있으니 설치에 유의하시기 바랍니다.
+- [테이블 이름] - [User]
+- [파티션 키] - [connectionId]
+- [파티션 키 자료형] - [문자열]
+
+을 입력한 뒤에 [생성] 버튼을 눌러주세요.
+
+![그림](../images/dynamo/6.png)
 
 ---
 
-### 준비가 끝났으니 단계에 따라 천천히 따라와 주세요! 👋
+아래와 같이 [User] 테이블이 생성 중입니다. 나머지 테이블들을 만들어 주기 위해 [테이블 만들기] 버튼을 눌러주세요.
 
-- [AWS IAM 이용 역할(Role) 만들기]()
+![그림](../images/dynamo/7.png)
+
+---
+
+**[Chat] Table**을 생성해 보겠습니다.
+
+- [테이블 이름] - [Chat]
+- [파티션 키] - [timestamp]
+- [파티션 키 자료형] - [문자열]
+
+를 입력한 뒤에 [생성] 버튼을 눌러주세요.
+
+![그림](../images/dynamo/8.png)
+
+---
+
+똑같은 방법으로 **[Game] Table**을 생성해 보겠습니다.
+
+- [테이블 이름] - [Game]
+- [파티션 키] - [id]
+- [파티션 키 자료형] - [번호]
+
+를 입력한 뒤에 [생성] 버튼을 눌러주세요.
+
+![그림](../images/dynamo/9.png)
+
+---
+
+아래와 같이 3개의 Table이 보인다면 DynamoDB 생성이 모두 끝났습니다!
+
+![그림](../images/dynamo/10.png)
+
+### DynamoDB 생성하기가 모두 끝났습니다.
+#### Websocket 연결 기능 만들기를 진행해주세요.😀
+
+
+- [AWS IAM 역할(Role) 만들기]()
 - [DynamoDB 생성하기]()
 - [Websocket 연결 기능 만들기]()
 - [Websocket 게임 및 채팅 기능 만들기]()
 - [Android 서비스에 연결하기]()
-
