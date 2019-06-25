@@ -30,7 +30,7 @@ Game 데이터를 저장하기 위한 테이블입니다. 현재 문제 초성, 
 ### 1. AWS DynamoDB 접속
 
 아래와 같이 AWS console에 접속하여 'dy'를 검색 후 DynamoDB 서비스로 접속합니다.
-
+ 
 ![그림](../images/dynamo/4.png)
 
 ### 2. Table 생성
@@ -95,8 +95,8 @@ Game 데이터를 저장하기 위한 테이블입니다. 현재 문제 초성, 
 #### Websocket 연결 기능 만들기를 진행해주세요.😀
 
 
-- [AWS IAM 역할(Role) 만들기]()
-- [DynamoDB 생성하기]()
-- [Websocket 연결 기능 만들기]()
-- [Websocket 게임 및 채팅 기능 만들기]()
-- [Android 서비스에 연결하기]()
+- [AWS IAM 역할(Role) 만들기](https://github.com/yebonkim/android-realtime-quiz/blob/master/guide/AWS_IAM_guide.md)
+- [DynamoDB 생성하기](https://github.com/yebonkim/android-realtime-quiz/blob/master/guide/AWS_DynamoDB_guide.md)
+- [Websocket 연결 기능 만들기](https://github.com/yebonkim/android-realtime-quiz/blob/master/guide/AWS_websocket_connection_guide.md)
+- [Websocket 게임 및 채팅 기능 만들기](https://github.com/yebonkim/android-realtime-quiz/blob/master/guide/AWS_websocket_guide.md)
+- [Android 서비스에 연결하기](https://github.com/yebonkim/android-realtime-quiz/blob/master/guide/Android_guide.md)
