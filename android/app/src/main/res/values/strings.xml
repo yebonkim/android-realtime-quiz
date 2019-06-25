@@ -6,4 +6,7 @@
     <string name="startGame">게임 시작!</string>
     <string name="reInput">다시 입력해주세요.</string>
 
+    <!-- Game Activity -->
+    <string name="inputAnswer">정답을 입력하세요.</string>
+    <string name="send">보내기</string>
 </resources>

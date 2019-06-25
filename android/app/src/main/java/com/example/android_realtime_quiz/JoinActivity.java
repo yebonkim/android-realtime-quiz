@@ -36,6 +36,7 @@ public class JoinActivity extends AppCompatActivity {
 
     private void registerGame(String nickname) {
         //TODO
+        startActivity(new Intent(this, GameActivity.class).putExtra(EXTRA_NICKNAME, nickname));
     }
 
     @OnClick(R.id.goToGameBtn)
