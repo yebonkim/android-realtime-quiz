@@ -37,7 +37,7 @@ cli에 git이 설치되신 분들은
 
 ~~~
 $git clone ~~~
-$git checkout base
+$git checkout Base
 ~~~
 
 를 입력해주세요.
@@ -134,10 +134,112 @@ public class NetDefine {
 ### 참고 (WSS Endpoint 보는 방법)
 - [Websocket 테스트](https://github.com/yebonkim/android-realtime-quiz/blob/master/guide/AWS_websocket_test_guide.md) 상단을 참고해주세요!
 
+---
+### 3. GameActivity.java 변경
 
+WebSocketManager가 준비되었으니 그에 맞게 GameActivity를 변경해보겠습니다!
+
+GameActivity.java에 아래 [주석이름] - [추가할 코드] 적어두었습니다.
+
+GameActivity.java안에서 해당 [주석이름]이 있는 곳에 [추가할 코드]를 추가해주세요.
+
+#### add WebSocket define code
+~~~
+WebSocketManager webSocketManager;
+~~~
+
+#### add WebSocket initialization code
+~~~
+webSocketManager = new WebSocketManager(webSocketListener);
+~~~
+
+#### add WebSocketListener Code
+~~~
+WebSocketListener webSocketListener = new WebSocketListener() {
+        @Override
+        public void onOpen(WebSocket webSocket, Response response) {
+            super.onOpen(webSocket, response);
+            Log.d(TAG, "open");
+        }
+
+        @Override
+        public void onMessage(WebSocket webSocket, String text) {
+            super.onMessage(webSocket, text);
+            Log.d(TAG, text);
+
+            // proper position?
+            showChatLayout();
+
+            Chat newChat = Chat.strToChat(text);
+            Game newGame = Game.strToGame(text);
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(newChat != null) {
+                        adapter.addNewChat(newChat);
+                    } else if(newGame != null) {
+                        consonantTV.setText(newGame.getNowConsonant());
+                    }
+
+                    chatRV.smoothScrollToPosition(adapter.getItemCount());
+                }
+            });
+        }
+
+        @Override
+        public void onMessage(WebSocket webSocket, ByteString bytes) {
+            super.onMessage(webSocket, bytes);
+            Log.d(TAG, bytes.toString());
+        }
+
+        @Override
+        public void onClosing(WebSocket webSocket, int code, String reason) {
+            super.onClosing(webSocket, code, reason);
+            Log.d(TAG, "closing");
+        }
+
+        @Override
+        public void onClosed(WebSocket webSocket, int code, String reason) {
+            super.onClosed(webSocket, code, reason);
+            Log.d(TAG, "closed");
+            finish();
+        }
+
+        @Override
+        public void onFailure(WebSocket webSocket, Throwable t, Response response) {
+            super.onFailure(webSocket, t, response);
+            Log.d(TAG, t.getMessage());
+        }
+    };
+~~~ 
+
+#### add send start code
+~~~
+if(webSocketManager != null) {
+    webSocketManager.sendMsg("start!");
+}
+~~~
+
+#### add send code
+~~~
+webSocketManager.sendMsg(newChat.toString());
+~~~
+
+#### add onDestroy code
+~~~
+@Override
+protected void onDestroy() {
+    super.onDestroy();
+    webSocketManager.close();
+}
+~~~
 
 
 ### Android 서비스에 연결하기를 마지막으로 핸즈온 과정이 모두 완료되었습니다!🎉🎉
+지금까지 잘 따라오셨다면 아래와 같이 동작하는 것을 볼 수 있습니다.
+
+![그림](../images/android/4.png)
 ### 모두 수고하셨습니다. 앞으로도 재밌는 개발되세요!😀
 
 
