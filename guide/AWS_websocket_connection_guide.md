@@ -145,7 +145,7 @@ async function deleteFromDyDB(params) {
 
 [저장] 버튼을 다시 눌러주세요.
 
-![그림](../images/connection/9.png)
+![그림](../images/connection/10.png)
 
 ---
 
