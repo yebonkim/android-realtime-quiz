@@ -147,7 +147,7 @@ GameActivity.java에 아래 [주석이름] - [추가할 코드] 적어두었습�
 
 GameActivity.java안에서 해당 [주석이름]이 있는 곳에 [추가할 코드]를 추가해주세요.
 
-**번거로우신 분들은 [링크]()에서 모두 복사 & 붙여넣기 해주셔도 됩니다.**
+**번거로우신 분들은 [링크](https://raw.githubusercontent.com/yebonkim/android-realtime-quiz/master/android/app/src/main/java/com/example/realtime_quiz/activity/GameActivity.java)에서 모두 복사 & 붙여넣기 해주셔도 됩니다.**
 
 ---
 
