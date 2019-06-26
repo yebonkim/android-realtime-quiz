@@ -9,11 +9,11 @@
 
 **Username 입력 화면**
 
-![그림](../images/android/1.jpeg)
+![그림](images/android/1.jpeg)
 
 **초성퀴즈 화면**
 
-![그림](../images/android/3_1.jpeg)
+![그림](images/android/3_1.jpeg)
 
 ---
 
