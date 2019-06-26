@@ -53,6 +53,7 @@ exports.handler = async (event, context) => {
     let isJson = true
     var payload
     var keys
+    
     try {
       payload = JSON.parse(event.body)
       keys = Object.keys(payload)
