@@ -1,4 +1,4 @@
-package com.example.android_realtime_quiz;
+package com.example.realtime_quiz;
 
 import org.junit.Test;
 

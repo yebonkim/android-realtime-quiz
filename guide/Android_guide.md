@@ -1,46 +1,149 @@
 # android-realtime-quiz🥳
 
-#### 본 세션은 AWS 서비스들을 이용하여 아래의 언어로 Websocket 실시간 안드로이드 초성퀴즈 앱을 만들어봅니다.
-- 람다 서버 : Node.js
-- 안드로이드 클라이언트 : Java
+## Android 서비스에 연결하기
 
----
+이번 파트에서는 AWS로 개발한 채팅 서버에 Android를 연결해보도록 하겠습니다.
 
-### 해당 세션을 진행하기 위해서는 아래와 같은 것들이 필요합니다.
+### 핸즈온 시간을 고려하여 대부분의 기능이 구현되어 있는 Base 프로젝트를 만들어 두었습니다.
+### 핸즈온은 이 Base 프로젝트를 수정해 나가는 형식으로 진행됩니다.
 
-#### 1. AWS 계정
+#### Base Project에 구현되었거나 변경된 파일들입니다. 필요하실 때 천천히 살펴봐 주세요!
 
-AWS 서비스를 사용하여 서버를 구축하기 때문에 AWS 계정이 필요합니다.
+- [app - build.gralde] - ButterKnife, OkHttp등 라이브러리 추가
+- [AndroidManifest.xml] - 인터넷 퍼미션 추가, GameActivity 컴포넌트 추가
+- [JoinActivity.java, activity_join.xml] - username 입력 Activity 추가
 
-- AWS 계정 만들기 [이동](https://aws.amazon.com/ko/)
+![그림](../images/android/1.jpeg)
+- [GameActivity.java, activity_game.xml] - start 버튼을 클릭하면 게임시작
 
-본 세션에서는 아래와 같은 서비스를 이용합니다.
+![그림](../images/android/2.jpeg)
+
+**[start 버튼 누르기 전]**
+
+![그림](../images/android/3.jpeg)
+
+**[start 버튼 누른 후]**
+- [model package] - DynamoDB와 맞는 Chat, Game 모델 추가
+- [view package] - RecyclerView 구현을 위한 class 추가
+- [adapter package] - RecyclerView 구현을 위한 ChatAdapter 추가
+- [drawable] - AUSG Logo, 오렌지 버튼, 오렌지 Radius Background 추가
+- [colors.xml] - 색상 추가
+- [strings.xml] - string 추가
+
+
+### 1. Base Project Clone
+
+cli에 git이 설치되신 분들은
+
 ~~~
-- AWS IAM
-- AWS APIGateway
-- AWS Lambda
-- AWS DynamoDB
+$git clone ~~~
+$git checkout base
 ~~~
 
-본 세션의 일환으로 시작하는 모든 리소스는 AWS 계정이 12개월 미만인 경우, 제공하는 AWS 프리티어로 충분히 가능합니다. 프리티어를 넘어서는 경우, 과금 될 수도 있습니다. 따라서, 새로운 실습용 계정을 만드시길 권장합니다. 자세한 내용은 [AWS 프리 티어 페이지](https://aws.amazon.com/free/)를 참조하세요.
+를 입력해주세요.
+
+git이 설치되지 않은 분들은 아래 그림과 같이 직접 Branch를 바꿔준 뒤 프로젝트를 download 받아 압축을 풀어주세요.
+ 
+![그림](../images/android/4.png)
 
 ---
 
-#### 2. Android Studio
+### 2. Socket Package 추가
 
-본 세션은 안드로이드 어플리케이션을 통해 클라이언트를 구현하기 때문에 Android Studio 및 Android SDK등이 필요합니다. 
+안드로이드 코드에 WebSocket을 관리해주기 위한 [WebSocketManager.java]와 [NetDefine.java] 파일을 추가해줄 것입니다.
 
-- Android Studio 설치 가이드 [이동](https://github.com/AUSG/ausg-seminar-2019/tree/master/AndroidTrack/preparation)
+아래와 같이 [com.example.realtime_quiz] 를 클릭한 후 마우스 오른쪽 클릭하여 
 
-또한 본 세션에서는 Android SDK 28 Version을 타겟으로 하고있으니 설치에 유의하시기 바랍니다.
+[New] - [Package]를 차례로 클릭해줍니다.
+
+![그림](../images/android/5.png)
+
+아래와 같은 화면이 뜨면 [socket]을 입력하고 [Ok] 버튼을 클릭해주세요.
+
+![그림](../images/android/6.png)
 
 ---
 
-### 준비가 끝났으니 단계에 따라 천천히 따라와 주세요! 👋
+[WebSocketManager.java] 파일부터 추가해보겠습니다.
 
-- [AWS IAM 이용 역할(Role) 만들기]()
-- [DynamoDB 생성하기]()
-- [Websocket 연결 기능 만들기]()
-- [Websocket 게임 및 채팅 기능 만들기]()
-- [Android 서비스에 연결하기]()
+아래와 같이 [socket] 을 클릭한 후 마우스 오른쪽 클릭하여 
 
+[New] - [Java class]를 차례로 클릭해줍니다.
+
+![그림](../images/android/7.png)
+
+아래와 같은 화면이 뜨면 [WebSocketManager]을 입력하고 [Ok] 버튼을 클릭해주세요.
+
+![그림](../images/android/8.png)
+
+WebSocketManager.java 파일이 열리면 아래 소스를 복사 & 붙여넣기 해 주세요.
+
+~~~
+package com.example.realtime_quiz.socket;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.WebSocket;
+import okhttp3.WebSocketListener;
+import okhttp3.logging.HttpLoggingInterceptor;
+
+public class WebSocketManager {
+    private OkHttpClient client;
+    private WebSocket socket;
+
+    public WebSocketManager(WebSocketListener webSocketListener) {
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
+        client = new OkHttpClient.Builder()
+                .addInterceptor(logging)
+                .build();
+
+        Request request = new Request.Builder().url(NetDefine.WSS_ADDRESS).build();
+        socket = client.newWebSocket(request, webSocketListener);
+        client.dispatcher().executorService().shutdown();
+    }
+
+    public void sendMsg(String msg) {
+        socket.send(msg);
+    }
+}
+~~~
+---
+
+다음으로 [NetDefine.java] 파일을 추가하겠습니다.
+
+아래와 같이 [socket] 을 클릭한 후 마우스 오른쪽 클릭하여 
+
+[New] - [Java class]를 차례로 클릭해줍니다.
+
+![그림](../images/android/7.png)
+
+아래와 같은 화면이 뜨면 [NetDefine]을 입력하고 [Ok] 버튼을 클릭해주세요.
+
+![그림](../images/android/9.png)
+
+NetDefine.java 파일이 열리면 아래 소스를 복사 & 붙여넣기 해 주세요.
+~~~
+package com.example.realtime_quiz.socket;
+
+public class NetDefine {
+    public static final String WSS_ADDRESS = "wss://자신의 websocket endpoint";
+}
+~~~
+
+### 참고 (WSS Endpoint 보는 방법)
+- [Websocket 테스트](https://github.com/yebonkim/android-realtime-quiz/blob/master/guide/AWS_websocket_test_guide.md) 상단을 참고해주세요!
+
+
+
+
+### Android 서비스에 연결하기를 마지막으로 핸즈온 과정이 모두 완료되었습니다!🎉🎉
+### 모두 수고하셨습니다. 앞으로도 재밌는 개발되세요!😀
+
+
+- [AWS IAM 역할(Role) 만들기](https://github.com/yebonkim/android-realtime-quiz/blob/master/guide/AWS_IAM_guide.md)
+- [DynamoDB 생성하기](https://github.com/yebonkim/android-realtime-quiz/blob/master/guide/AWS_DynamoDB_guide.md)
+- [Websocket 연결 기능 만들기](https://github.com/yebonkim/android-realtime-quiz/blob/master/guide/AWS_websocket_connection_guide.md)
+- [Websocket 테스트](https://github.com/yebonkim/android-realtime-quiz/blob/master/guide/AWS_websocket_test_guide.md)
+- [Websocket 게임 및 채팅 기능 만들기](https://github.com/yebonkim/android-realtime-quiz/blob/master/guide/AWS_websocket_guide.md)
+- [Android 서비스에 연결하기](https://github.com/yebonkim/android-realtime-quiz/blob/master/guide/Android_guide.md)
