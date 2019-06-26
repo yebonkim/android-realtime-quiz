@@ -110,6 +110,10 @@ public class WebSocketManager {
     public void sendMsg(String msg) {
         socket.send(msg);
     }
+
+    public void close() {
+        socket.close(200, "Successed");
+    }
 }
 ~~~
 ---
