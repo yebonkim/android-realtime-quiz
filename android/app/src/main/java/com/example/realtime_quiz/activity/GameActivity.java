@@ -16,6 +16,7 @@ import com.example.realtime_quiz.adapter.ChatAdapter;
 import com.example.realtime_quiz.model.Chat;
 import com.example.realtime_quiz.model.Game;
 // TODO : Add WebSocket import
+import com.example.realtime_quiz.socket.WebSocketManager;
 
 
 import butterknife.BindView;
@@ -46,6 +47,7 @@ public class GameActivity extends AppCompatActivity {
     ChatAdapter adapter;
 
     // TODO : add WebSocket define code
+    WebSocketManager webSocketManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +58,7 @@ public class GameActivity extends AppCompatActivity {
         getIntentData();
         initRecyclerView();
         // TODO : add WebSocket initialization code
+        webSocketManager = new WebSocketManager(webSocketListener);
     }
 
     private void getIntentData() {
@@ -90,10 +93,70 @@ public class GameActivity extends AppCompatActivity {
     }
 
     // TODO : add WebSocketListener Code
+    WebSocketListener webSocketListener = new WebSocketListener() {
+        @Override
+        public void onOpen(WebSocket webSocket, Response response) {
+            super.onOpen(webSocket, response);
+            Log.d(TAG, "open");
+        }
+
+        @Override
+        public void onMessage(WebSocket webSocket, String text) {
+            super.onMessage(webSocket, text);
+            Log.d(TAG, text);
+
+            // proper position?
+            showChatLayout();
+
+            Chat newChat = Chat.strToChat(text);
+            Game newGame = Game.strToGame(text);
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(newChat != null) {
+                        adapter.addNewChat(newChat);
+                    } else if(newGame != null) {
+                        consonantTV.setText(newGame.getNowConsonant());
+                    }
+
+                    chatRV.smoothScrollToPosition(adapter.getItemCount());
+                }
+            });
+        }
+
+        @Override
+        public void onMessage(WebSocket webSocket, ByteString bytes) {
+            super.onMessage(webSocket, bytes);
+            Log.d(TAG, bytes.toString());
+        }
+
+        @Override
+        public void onClosing(WebSocket webSocket, int code, String reason) {
+            super.onClosing(webSocket, code, reason);
+            Log.d(TAG, "closing");
+        }
+
+        @Override
+        public void onClosed(WebSocket webSocket, int code, String reason) {
+            super.onClosed(webSocket, code, reason);
+            Log.d(TAG, "closed");
+            finish();
+        }
+
+        @Override
+        public void onFailure(WebSocket webSocket, Throwable t, Response response) {
+            super.onFailure(webSocket, t, response);
+            Log.d(TAG, t.getMessage());
+        }
+    };
 
     @OnClick(R.id.startBtn)
     public void onStartBtnClicked() {
         // TODO : add send start code
+        if(webSocketManager != null) {
+            webSocketManager.sendMsg("start!");
+        }
     }
 
     @OnClick(R.id.sendBtn)
@@ -108,8 +171,14 @@ public class GameActivity extends AppCompatActivity {
         newChat = new Chat(nickname, chatMsg);
 
         // TODO : add send code
+        webSocketManager.sendMsg(newChat.toString());
         answerET.setText("");
     }
 
     // TODO : add onDestroy code
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        webSocketManager.close();
+    }
 }
