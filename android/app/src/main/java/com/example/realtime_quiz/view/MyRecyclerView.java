@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 public class MyRecyclerView extends RecyclerView {
-    protected View emptyView;
+    protected View mEmptyView;
 
     public MyRecyclerView(Context context) {
         super(context);
@@ -29,30 +29,16 @@ public class MyRecyclerView extends RecyclerView {
             @Override
             public void onChanged() {
                 super.onChanged();
-                if (emptyView == null) {
+                if (mEmptyView == null) {
                     return;
                 }
                 if (adapter.getItemCount() == 0) {
-                    emptyView.setVisibility(View.VISIBLE);
+                    mEmptyView.setVisibility(View.VISIBLE);
                 } else {
-                    emptyView.setVisibility(View.GONE);
+                    mEmptyView.setVisibility(View.GONE);
                 }
             }
         });
         adapter.notifyDataSetChanged();
-    }
-
-    public void setEmptyView(View view) {
-        emptyView = view;
-        Adapter adapter = getAdapter();
-        if (adapter == null) {
-            emptyView.setVisibility(View.VISIBLE);
-        } else {
-            if (adapter.getItemCount() == 0) {
-                emptyView.setVisibility(View.VISIBLE);
-            } else {
-                emptyView.setVisibility(View.GONE);
-            }
-        }
     }
 }

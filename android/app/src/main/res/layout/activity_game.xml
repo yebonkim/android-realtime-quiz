@@ -23,7 +23,7 @@
         >
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/startLayout"
+            android:id="@+id/layout_start"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="visible"
@@ -45,14 +45,14 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/chatLayout"
+            android:id="@+id/layout_chat"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="invisible"
             >
 
             <TextView
-                android:id="@+id/consonantTV"
+                android:id="@+id/text_consonant"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/black"
@@ -66,34 +66,34 @@
 
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/chatRV"
+                android:id="@+id/list_chat"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                app:layout_constraintTop_toBottomOf="@id/consonantTV"
-                app:layout_constraintBottom_toTopOf="@id/answerET"
+                app:layout_constraintTop_toBottomOf="@id/text_consonant"
+                app:layout_constraintBottom_toTopOf="@id/edit_answer"
                 android:layout_marginTop="20dp"
                 />
 
             <EditText
-                android:id="@+id/answerET"
+                android:id="@+id/edit_answer"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:hint="@string/inputAnswer"
                 android:paddingLeft="10dp"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toLeftOf="@id/sendBtn"
+                app:layout_constraintRight_toLeftOf="@id/btn_send"
                 app:layout_constraintBottom_toBottomOf="parent"
                 />
 
             <Button
-                android:id="@+id/sendBtn"
+                android:id="@+id/btn_send"
                 android:layout_width="80dp"
                 android:layout_height="40dp"
                 android:background="@drawable/orange_rectangle_btn_back"
                 android:text="@string/send"
                 android:textColor="@color/white"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toRightOf="@id/answerET"
+                app:layout_constraintLeft_toRightOf="@id/edit_answer"
                 app:layout_constraintRight_toRightOf="parent"
                 />
 

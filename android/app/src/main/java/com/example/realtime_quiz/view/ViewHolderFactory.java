@@ -6,10 +6,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 public abstract class ViewHolderFactory {
-    public abstract RecyclerView.ViewHolder createViewHolder(ViewGroup parent, int viewType);
-
-
-    public static interface Updateable<T> {
-        public void update(T data);
+    public interface Updateable<T> {
+        void update(T data);
     }
 }

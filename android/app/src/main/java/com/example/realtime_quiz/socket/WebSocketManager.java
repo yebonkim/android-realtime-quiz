@@ -7,26 +7,26 @@ import okhttp3.WebSocketListener;
 import okhttp3.logging.HttpLoggingInterceptor;
 
 public class WebSocketManager {
-    private OkHttpClient client;
-    private WebSocket socket;
+    private OkHttpClient mClient;
+    private WebSocket mSocket;
 
     public WebSocketManager(WebSocketListener webSocketListener) {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
-        client = new OkHttpClient.Builder()
+        mClient = new OkHttpClient.Builder()
                 .addInterceptor(logging)
                 .build();
 
         Request request = new Request.Builder().url(NetDefine.WSS_ADDRESS).build();
-        socket = client.newWebSocket(request, webSocketListener);
-        client.dispatcher().executorService().shutdown();
+        mSocket = mClient.newWebSocket(request, webSocketListener);
+        mClient.dispatcher().executorService().shutdown();
     }
 
     public void sendMsg(String msg) {
-        socket.send(msg);
+        mSocket.send(msg);
     }
 
     public void close() {
-        socket.close(200, "Successed");
+        mSocket.close(200, "Successed");
     }
 }

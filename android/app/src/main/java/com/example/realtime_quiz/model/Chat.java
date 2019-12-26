@@ -1,16 +1,17 @@
 package com.example.realtime_quiz.model;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Chat {
-    private String username;
-    private String content;
-
     private static final String USERNAME = "username";
     private static final String CONTENT = "content";
+
+    private String username;
+    private String content;
 
     public Chat() {
 
@@ -25,18 +26,11 @@ public class Chat {
         return username;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
     public String getContent() {
         return content;
     }
 
-    public void setContent(String content) {
-        this.content = content;
-    }
-
+    @NonNull
     public JSONObject toJsonObject() {
         JSONObject jsonObject = new JSONObject();
 
@@ -66,7 +60,7 @@ public class Chat {
     public static Chat strToChat(String jsonStr) {
         JSONObject jsonObject = toJsonObject(jsonStr);
 
-        if(jsonObject == null) {
+        if (jsonObject == null) {
             return null;
         }
 
@@ -84,6 +78,12 @@ public class Chat {
     }
 
     public String toString() {
-        return toJsonObject().toString();
+        JSONObject jsonObject = toJsonObject();
+
+        if (jsonObject == null) {
+            return "[Error] Object to JsonObject is invalid";
+        } else {
+            return jsonObject.toString();
+        }
     }
 }

@@ -1,20 +1,21 @@
 package com.example.realtime_quiz.model;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Game {
-    private int id;
-    private String answeredWords;
-    private String nowConsonant;
-    private String nowWordIdx;
-
     private static final String ID = "id";
     private static final String ANSWERED_WORDS = "answeredWords";
     private static final String NOW_CONSONANT = "nowConsonant";
     private static final String NOW_WORD_IDX = "nowWordIdx";
+
+    private int id;
+    private String answeredWords;
+    private String nowConsonant;
+    private String nowWordIdx;
 
     public Game() {
 
@@ -27,38 +28,11 @@ public class Game {
         this.nowWordIdx = nowWordIdx;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getAnsweredWords() {
-        return answeredWords;
-    }
-
-    public void setAnsweredWords(String answeredWords) {
-        this.answeredWords = answeredWords;
-    }
-
     public String getNowConsonant() {
         return nowConsonant;
     }
 
-    public void setNowConsonant(String nowConsonant) {
-        this.nowConsonant = nowConsonant;
-    }
-
-    public String getNowWordIdx() {
-        return nowWordIdx;
-    }
-
-    public void setNowWordIdx(String nowWordIdx) {
-        this.nowWordIdx = nowWordIdx;
-    }
-
+    @NonNull
     public JSONObject toJsonObject() {
         JSONObject jsonObject = new JSONObject();
 
@@ -90,7 +64,7 @@ public class Game {
     public static Game strToGame(String jsonStr) {
         JSONObject jsonObject = toJsonObject(jsonStr);
 
-        if(jsonObject == null) {
+        if (jsonObject == null) {
             return null;
         }
 
@@ -110,6 +84,12 @@ public class Game {
     }
 
     public String toString() {
-        return toJsonObject().toString();
+        JSONObject jsonObject = toJsonObject();
+
+        if (jsonObject == null) {
+            return "[Error] Object to JsonObject is invalid";
+        } else {
+            return jsonObject.toString();
+        }
     }
 }

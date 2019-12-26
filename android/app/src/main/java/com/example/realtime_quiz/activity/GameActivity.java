@@ -11,6 +11,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.realtime_quiz.IntentConstant;
 import com.example.realtime_quiz.R;
 import com.example.realtime_quiz.adapter.ChatAdapter;
 import com.example.realtime_quiz.model.Chat;
@@ -28,26 +29,25 @@ import okhttp3.WebSocketListener;
 import okio.ByteString;
 
 public class GameActivity extends AppCompatActivity {
-
     private static final String TAG = GameActivity.class.getSimpleName();
 
-    @BindView(R.id.answerET)
-    EditText answerET;
-    @BindView(R.id.startLayout)
-    ConstraintLayout startLayout;
-    @BindView(R.id.chatLayout)
-    ConstraintLayout chatLayout;
-    @BindView(R.id.chatRV)
-    RecyclerView chatRV;
-    @BindView(R.id.consonantTV)
-    TextView consonantTV;
+    @BindView(R.id.edit_answer)
+    EditText mAnswerEdit;
+    @BindView(R.id.layout_start)
+    ConstraintLayout mStartLayout;
+    @BindView(R.id.layout_chat)
+    ConstraintLayout mChatLayout;
+    @BindView(R.id.list_chat)
+    RecyclerView mChatList;
+    @BindView(R.id.text_consonant)
+    TextView mConsonant;
 
-    String nickname;
+    ChatAdapter mAdapter;
 
-    ChatAdapter adapter;
+    String mNickname;
 
     // TODO : add WebSocket define code
-    WebSocketManager webSocketManager;
+    WebSocketManager mWebSocketManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,22 +58,21 @@ public class GameActivity extends AppCompatActivity {
         getIntentData();
         initRecyclerView();
         // TODO : add WebSocket initialization code
-        webSocketManager = new WebSocketManager(webSocketListener);
+        mWebSocketManager = new WebSocketManager(mWebSocketListener);
     }
 
     private void getIntentData() {
-        nickname = getIntent().getStringExtra(JoinActivity.EXTRA_USERNAME);
+        mNickname = getIntent().getStringExtra(IntentConstant.USERNAME);
     }
 
     private void initRecyclerView() {
-        adapter = new ChatAdapter();
-        chatRV.setLayoutManager(new LinearLayoutManager(this));
-        chatRV.setAdapter(adapter);
+        mAdapter = new ChatAdapter();
+        mChatList.setLayoutManager(new LinearLayoutManager(this));
+        mChatList.setAdapter(mAdapter);
     }
 
-
     private boolean isValid(String str) {
-        if(str.length() == 0) {
+        if (str.length() == 0) {
             return false;
         }
 
@@ -81,19 +80,17 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void showChatLayout() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if(chatLayout.getVisibility() == View.INVISIBLE) {
-                    chatLayout.setVisibility(View.VISIBLE);
-                    startLayout.setVisibility(View.INVISIBLE);
+        runOnUiThread(() -> {
+                if (mChatLayout.getVisibility() == View.INVISIBLE) {
+                    mChatLayout.setVisibility(View.VISIBLE);
+                    mStartLayout.setVisibility(View.INVISIBLE);
                 }
             }
-        });
+        );
     }
 
     // TODO : add WebSocketListener Code
-    WebSocketListener webSocketListener = new WebSocketListener() {
+    WebSocketListener mWebSocketListener = new WebSocketListener() {
         @Override
         public void onOpen(WebSocket webSocket, Response response) {
             super.onOpen(webSocket, response);
@@ -114,13 +111,13 @@ public class GameActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if(newChat != null) {
-                        adapter.addNewChat(newChat);
-                    } else if(newGame != null) {
-                        consonantTV.setText(newGame.getNowConsonant());
+                    if (newChat != null) {
+                        mAdapter.addNewChat(newChat);
+                    } else if (newGame != null) {
+                        mConsonant.setText(newGame.getNowConsonant());
                     }
 
-                    chatRV.smoothScrollToPosition(adapter.getItemCount());
+                    mChatList.smoothScrollToPosition(mAdapter.getItemCount());
                 }
             });
         }
@@ -154,31 +151,31 @@ public class GameActivity extends AppCompatActivity {
     @OnClick(R.id.startBtn)
     public void onStartBtnClicked() {
         // TODO : add send start code
-        if(webSocketManager != null) {
-            webSocketManager.sendMsg("start!");
+        if (mWebSocketManager != null) {
+            mWebSocketManager.sendMsg("start!");
         }
     }
 
-    @OnClick(R.id.sendBtn)
+    @OnClick(R.id.btn_send)
     public void onSendBtnClicked() {
-        String chatMsg = answerET.getText().toString();
+        String chatMsg = mAnswerEdit.getText().toString();
         Chat newChat;
 
-        if(isValid(chatMsg) == false) {
+        if (isValid(chatMsg) == false) {
             return;
         }
 
-        newChat = new Chat(nickname, chatMsg);
+        newChat = new Chat(mNickname, chatMsg);
 
         // TODO : add send code
-        webSocketManager.sendMsg(newChat.toString());
-        answerET.setText("");
+        mWebSocketManager.sendMsg(newChat.toString());
+        mAnswerEdit.setText("");
     }
 
     // TODO : add onDestroy code
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        webSocketManager.close();
+        mWebSocketManager.close();
     }
 }
