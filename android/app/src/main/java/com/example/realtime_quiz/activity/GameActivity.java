@@ -1,7 +1,6 @@
 package com.example.realtime_quiz.activity;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -15,21 +14,17 @@ import com.example.realtime_quiz.IntentConstant;
 import com.example.realtime_quiz.R;
 import com.example.realtime_quiz.adapter.ChatAdapter;
 import com.example.realtime_quiz.model.Chat;
-import com.example.realtime_quiz.model.Game;
 // TODO : Add WebSocket import
+import com.example.realtime_quiz.model.Game;
 import com.example.realtime_quiz.socket.WebSocketManager;
+import com.example.realtime_quiz.socket.WebSocketMessageListener;
 
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import okhttp3.Response;
-import okhttp3.WebSocket;
-import okhttp3.WebSocketListener;
-import okio.ByteString;
 
 public class GameActivity extends AppCompatActivity {
-    private static final String TAG = GameActivity.class.getSimpleName();
 
     @BindView(R.id.edit_answer)
     EditText mAnswerEdit;
@@ -58,8 +53,22 @@ public class GameActivity extends AppCompatActivity {
         getIntentData();
         initRecyclerView();
         // TODO : add WebSocket initialization code
-        mWebSocketManager = new WebSocketManager(mWebSocketListener);
+        mWebSocketManager = WebSocketManager.getInstance(mWsMsgListener);
     }
+
+    private WebSocketMessageListener mWsMsgListener = new WebSocketMessageListener() {
+        @Override
+        public void onGameDataReceived(Game game) {
+            showChatLayout();
+            mConsonant.setText(game.getNowConsonant());
+        }
+
+        @Override
+        public void onChatDataReceived(Chat chat) {
+            mAdapter.addNewChat(chat);
+            mChatList.smoothScrollToPosition(mAdapter.getItemCount());
+        }
+    };
 
     private void getIntentData() {
         mNickname = getIntent().getStringExtra(IntentConstant.USERNAME);
@@ -88,65 +97,6 @@ public class GameActivity extends AppCompatActivity {
             }
         );
     }
-
-    // TODO : add WebSocketListener Code
-    WebSocketListener mWebSocketListener = new WebSocketListener() {
-        @Override
-        public void onOpen(WebSocket webSocket, Response response) {
-            super.onOpen(webSocket, response);
-            Log.d(TAG, "open");
-        }
-
-        @Override
-        public void onMessage(WebSocket webSocket, String text) {
-            super.onMessage(webSocket, text);
-            Log.d(TAG, text);
-
-            // proper position?
-            showChatLayout();
-
-            Chat newChat = Chat.strToChat(text);
-            Game newGame = Game.strToGame(text);
-
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (newChat != null) {
-                        mAdapter.addNewChat(newChat);
-                    } else if (newGame != null) {
-                        mConsonant.setText(newGame.getNowConsonant());
-                    }
-
-                    mChatList.smoothScrollToPosition(mAdapter.getItemCount());
-                }
-            });
-        }
-
-        @Override
-        public void onMessage(WebSocket webSocket, ByteString bytes) {
-            super.onMessage(webSocket, bytes);
-            Log.d(TAG, bytes.toString());
-        }
-
-        @Override
-        public void onClosing(WebSocket webSocket, int code, String reason) {
-            super.onClosing(webSocket, code, reason);
-            Log.d(TAG, "closing");
-        }
-
-        @Override
-        public void onClosed(WebSocket webSocket, int code, String reason) {
-            super.onClosed(webSocket, code, reason);
-            Log.d(TAG, "closed");
-            finish();
-        }
-
-        @Override
-        public void onFailure(WebSocket webSocket, Throwable t, Response response) {
-            super.onFailure(webSocket, t, response);
-            Log.d(TAG, t.getMessage());
-        }
-    };
 
     @OnClick(R.id.startBtn)
     public void onStartBtnClicked() {

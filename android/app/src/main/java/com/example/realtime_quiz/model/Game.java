@@ -6,7 +6,7 @@ import androidx.annotation.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Game {
+public class Game implements WebSocketMessage<Game> {
     private static final String ID = "id";
     private static final String ANSWERED_WORDS = "answeredWords";
     private static final String NOW_CONSONANT = "nowConsonant";
@@ -33,6 +33,7 @@ public class Game {
     }
 
     @NonNull
+    @Override
     public JSONObject toJsonObject() {
         JSONObject jsonObject = new JSONObject();
 
@@ -61,7 +62,8 @@ public class Game {
     }
 
     @Nullable
-    public static Game strToGame(String jsonStr) {
+    @Override
+    public Game strToObj(String jsonStr) {
         JSONObject jsonObject = toJsonObject(jsonStr);
 
         if (jsonObject == null) {
