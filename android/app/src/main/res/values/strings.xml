@@ -2,11 +2,11 @@
     <string name="app_name">realtime-quiz</string>
 
     <!-- Join Activity -->
-    <string name="inputNickname">닉네임을 입력하세요.</string>
-    <string name="startGame">게임 시작!</string>
-    <string name="reInput">다시 입력해주세요.</string>
+    <string name="msg_input_username">닉네임을 입력하세요.</string>
+    <string name="action_game_start">게임 시작!</string>
+    <string name="err_input_again">다시 입력해주세요.</string>
 
     <!-- Game Activity -->
-    <string name="inputAnswer">정답을 입력하세요.</string>
-    <string name="send">보내기</string>
+    <string name="msg_input_answer">정답을 입력하세요.</string>
+    <string name="action_send">보내기</string>
 </resources>

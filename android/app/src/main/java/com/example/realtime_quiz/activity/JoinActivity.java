@@ -33,7 +33,7 @@ public class JoinActivity extends AppCompatActivity {
         if (isValid(username)) {
             goToGameActivity(username);
         } else {
-            Toast.makeText(this, getString(R.string.reInput), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.err_input_again), Toast.LENGTH_SHORT).show();
         }
     }
 
