@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -68,6 +69,12 @@ public class GameActivity extends AppCompatActivity {
         public void onChatDataReceived(Chat chat) {
             mAdapter.addNewChat(chat);
             mChatList.smoothScrollToPosition(mAdapter.getItemCount());
+        }
+
+        @Override
+        public void onSocketClosed(int code) {
+            Toast.makeText(GameActivity.this, getString(R.string.err_game_disconnected), Toast.LENGTH_LONG).show();
+            finish();
         }
     };
 

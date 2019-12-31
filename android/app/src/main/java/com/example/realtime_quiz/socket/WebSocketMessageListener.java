@@ -6,4 +6,5 @@ import com.example.realtime_quiz.model.Game;
 public interface WebSocketMessageListener {
     void onGameDataReceived(Game game);
     void onChatDataReceived(Chat chat);
+    void onSocketClosed(int code);
 }

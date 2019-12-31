@@ -115,6 +115,10 @@ public class WebSocketManager {
         public void onClosed(WebSocket webSocket, int code, String reason) {
             super.onClosed(webSocket, code, reason);
             Log.d(TAG, "closed");
+
+            if (mWsMsgListener != null) {
+                mWsMsgListener.onSocketClosed(code);
+            }
         }
 
         @Override

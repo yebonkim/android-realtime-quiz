@@ -46,6 +46,11 @@ public class JoinActivity extends AppCompatActivity {
         public void onChatDataReceived(Chat chat) {
             return;
         }
+
+        @Override
+        public void onSocketClosed(int code) {
+            Toast.makeText(JoinActivity.this, getString(R.string.err_game_disconnected), Toast.LENGTH_LONG).show();
+        }
     };
 
     @OnClick(R.id.btn_to_game)

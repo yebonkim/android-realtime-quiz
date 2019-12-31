@@ -9,4 +9,6 @@
     <!-- Game Activity -->
     <string name="msg_input_answer">정답을 입력하세요.</string>
     <string name="action_send">보내기</string>
+
+    <string name="err_game_disconnected">게임과의 연결이 끊어졌습니다.</string>
 </resources>
