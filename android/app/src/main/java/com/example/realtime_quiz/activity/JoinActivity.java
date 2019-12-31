@@ -10,6 +10,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.realtime_quiz.IntentConstant;
 import com.example.realtime_quiz.R;
+import com.example.realtime_quiz.model.Chat;
+import com.example.realtime_quiz.model.Game;
+import com.example.realtime_quiz.socket.WebSocketManager;
+import com.example.realtime_quiz.socket.WebSocketMessageListener;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -19,21 +23,46 @@ public class JoinActivity extends AppCompatActivity {
     @BindView(R.id.edit_username)
     EditText mUsernameEdit;
 
+    String mUsername;
+
+    WebSocketManager mWebSocketManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_join);
         ButterKnife.bind(this);
+
+        mWebSocketManager = WebSocketManager.getInstance(mWsMsgListener);
     }
+
+    WebSocketMessageListener mWsMsgListener = new WebSocketMessageListener() {
+        @Override
+        public void onGameDataReceived(Game game) {
+            goToGameActivity(mUsername);
+        }
+
+        @Override
+        public void onChatDataReceived(Chat chat) {
+            return;
+        }
+    };
 
     @OnClick(R.id.btn_to_game)
     public void goToGame() {
-        String username = mUsernameEdit.getText().toString();
+        mUsername = mUsernameEdit.getText().toString();
 
-        if (isValid(username)) {
-            goToGameActivity(username);
+        if (isValid(mUsername)) {
+            joinGame();
         } else {
             Toast.makeText(this, getString(R.string.err_input_again), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void joinGame() {
+        // TODO : add send start code
+        if (mWebSocketManager != null) {
+            mWebSocketManager.sendMsg("start!");
         }
     }
 

@@ -2,6 +2,8 @@ package com.example.realtime_quiz.socket;
 
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
 import com.example.realtime_quiz.model.Chat;
 import com.example.realtime_quiz.model.Game;
 import com.example.realtime_quiz.model.WebSocketMessage;
@@ -16,6 +18,8 @@ import okio.ByteString;
 
 public class WebSocketManager {
     private static final String TAG = WebSocketManager.class.getSimpleName();
+
+    private Game mGame;
 
     private OkHttpClient mClient;
     private WebSocket mSocket;
@@ -41,6 +45,11 @@ public class WebSocketManager {
     public static WebSocketManager getInstance (WebSocketMessageListener wsMsgListener) {
         Singleton.instance.setWebSocketMessageListener(wsMsgListener);
         return Singleton.instance;
+    }
+
+    @Nullable
+    public Game getGame() {
+        return mGame;
     }
 
     public void sendMsg(String msg) {
@@ -84,6 +93,7 @@ public class WebSocketManager {
             msg = new Game().strToObj(text);
 
             if (msg != null) {
+                mGame = (Game) msg;
                 mWsMsgListener.onGameDataReceived((Game) msg);
                 return;
             }

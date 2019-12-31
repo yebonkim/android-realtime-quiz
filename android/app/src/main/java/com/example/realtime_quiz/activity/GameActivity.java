@@ -25,13 +25,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class GameActivity extends AppCompatActivity {
-
     @BindView(R.id.edit_answer)
     EditText mAnswerEdit;
-    @BindView(R.id.layout_start)
-    ConstraintLayout mStartLayout;
-    @BindView(R.id.layout_chat)
-    ConstraintLayout mChatLayout;
     @BindView(R.id.list_chat)
     RecyclerView mChatList;
     @BindView(R.id.text_consonant)
@@ -54,13 +49,19 @@ public class GameActivity extends AppCompatActivity {
         initRecyclerView();
         // TODO : add WebSocket initialization code
         mWebSocketManager = WebSocketManager.getInstance(mWsMsgListener);
+        Game game = mWebSocketManager.getGame();
+
+        if (game != null) {
+            mWsMsgListener.onGameDataReceived(game);
+        }
     }
 
     private WebSocketMessageListener mWsMsgListener = new WebSocketMessageListener() {
         @Override
         public void onGameDataReceived(Game game) {
-            showChatLayout();
-            mConsonant.setText(game.getNowConsonant());
+            if (game.getNowConsonant() != null) {
+                mConsonant.setText(game.getNowConsonant());
+            }
         }
 
         @Override
@@ -86,24 +87,6 @@ public class GameActivity extends AppCompatActivity {
         }
 
         return true;
-    }
-
-    private void showChatLayout() {
-        runOnUiThread(() -> {
-                if (mChatLayout.getVisibility() == View.INVISIBLE) {
-                    mChatLayout.setVisibility(View.VISIBLE);
-                    mStartLayout.setVisibility(View.INVISIBLE);
-                }
-            }
-        );
-    }
-
-    @OnClick(R.id.startBtn)
-    public void onStartBtnClicked() {
-        // TODO : add send start code
-        if (mWebSocketManager != null) {
-            mWebSocketManager.sendMsg("start!");
-        }
     }
 
     @OnClick(R.id.btn_send)
