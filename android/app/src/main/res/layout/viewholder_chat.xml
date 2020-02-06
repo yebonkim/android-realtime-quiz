@@ -5,7 +5,7 @@
     android:layout_height="50dp">
 
     <TextView
-        android:id="@+id/usernameTV"
+        android:id="@+id/text_username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/black"
@@ -18,7 +18,7 @@
         />
 
     <TextView
-        android:id="@+id/contentTV"
+        android:id="@+id/text_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/black"
