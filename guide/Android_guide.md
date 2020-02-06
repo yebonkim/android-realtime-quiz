@@ -54,7 +54,7 @@ git이 설치되지 않은 분들은 아래 그림과 같이 직접 [Branch:mast
 
 ### 2. Socket Package 추가
 
-안드로이드 코드에 WebSocket을 관리해주기 위한 [WebSocketManager.java]와 [NetDefine.java] 파일을 추가해줄 것입니다.
+안드로이드 코드에 WebSocket을 관리해주기 위한 [WebSocketManager.java]와 [NetDefine.java], [WebSocketMessageListener.java] 파일을 추가해줄 것입니다.
 
 아래와 같이 [com.example.realtime_quiz] 를 클릭한 후 마우스 오른쪽 클릭하여 
 
@@ -69,6 +69,8 @@ git이 설치되지 않은 분들은 아래 그림과 같이 직접 [Branch:mast
 ---
 
 [WebSocketManager.java] 파일부터 추가해보겠습니다.
+
+- WebSocketManager는 WebSocket을 연결하고 해제하는 관리를 하며 특히 메시지가 도착할 경우 Chat 메시지인지 Game 메시지인지에 따라 WebSocketMessageListener에게 메시지를 전달합니다.
 
 아래와 같이 [socket] 을 클릭한 후 마우스 오른쪽 클릭하여 
 
@@ -85,40 +87,169 @@ WebSocketManager.java 파일이 열리면 아래 소스를 복사 & 붙여넣기
 ~~~
 package com.example.realtime_quiz.socket;
 
+import android.util.Log;
+
+import androidx.annotation.Nullable;
+
+import com.example.realtime_quiz.model.Chat;
+import com.example.realtime_quiz.model.Game;
+import com.example.realtime_quiz.model.WebSocketMessage;
+
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.Response;
 import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
 import okhttp3.logging.HttpLoggingInterceptor;
+import okio.ByteString;
 
 public class WebSocketManager {
-    private OkHttpClient client;
-    private WebSocket socket;
+    private static final String TAG = WebSocketManager.class.getSimpleName();
 
-    public WebSocketManager(WebSocketListener webSocketListener) {
-        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
-        client = new OkHttpClient.Builder()
-                .addInterceptor(logging)
+    private Game mGame;
+
+    private OkHttpClient mClient;
+    private WebSocket mSocket;
+    private WebSocketMessageListener mWsMsgListener;
+
+    private static class Singleton {
+        private static final WebSocketManager instance = new WebSocketManager();
+    }
+
+    private WebSocketManager() {
+        HttpLoggingInterceptor logger = new HttpLoggingInterceptor();
+        logger.setLevel(HttpLoggingInterceptor.Level.BASIC);
+        mClient = new OkHttpClient.Builder()
+                .addInterceptor(logger)
                 .build();
-
         Request request = new Request.Builder().url(NetDefine.WSS_ADDRESS).build();
-        socket = client.newWebSocket(request, webSocketListener);
-        client.dispatcher().executorService().shutdown();
+
+        mSocket = mClient.newWebSocket(request, mWebSocketListener);
+
+        mClient.dispatcher().executorService().shutdown();
+    }
+
+    public static WebSocketManager getInstance (WebSocketMessageListener wsMsgListener) {
+        Singleton.instance.setWebSocketMessageListener(wsMsgListener);
+        return Singleton.instance;
+    }
+
+    @Nullable
+    public Game getGame() {
+        return mGame;
     }
 
     public void sendMsg(String msg) {
-        socket.send(msg);
+        mSocket.send(msg);
+    }
+
+    public void setWebSocketMessageListener(WebSocketMessageListener wsMsgListener) {
+        mWsMsgListener = wsMsgListener;
     }
 
     public void close() {
-        socket.close(200, "Successed");
+        mSocket.close(200, "succeed");
+        mClient.dispatcher().executorService().shutdown();
     }
+
+    private WebSocketListener mWebSocketListener = new WebSocketListener() {
+        WebSocketMessage msg;
+
+        @Override
+        public void onOpen(WebSocket webSocket, Response response) {
+            super.onOpen(webSocket, response);
+            Log.d(TAG, "open");
+        }
+
+        @Override
+        public void onMessage(WebSocket webSocket, String text) {
+            super.onMessage(webSocket, text);
+            Log.d(TAG, "msg(str) : " + text);
+
+            if (mWsMsgListener == null) {
+                return;
+            }
+
+            msg = new Chat().strToObj(text);
+
+            if (msg != null) {
+                mWsMsgListener.onChatDataReceived((Chat) msg);
+                return;
+            }
+
+            msg = new Game().strToObj(text);
+
+            if (msg != null) {
+                mGame = (Game) msg;
+                mWsMsgListener.onGameDataReceived((Game) msg);
+                return;
+            }
+        }
+
+        @Override
+        public void onMessage(WebSocket webSocket, ByteString bytes) {
+            super.onMessage(webSocket, bytes);
+            Log.d(TAG, "msg(byte) : " + bytes.toString());
+        }
+
+        @Override
+        public void onClosing(WebSocket webSocket, int code, String reason) {
+            super.onClosing(webSocket, code, reason);
+            Log.d(TAG, "closing");
+        }
+
+        @Override
+        public void onClosed(WebSocket webSocket, int code, String reason) {
+            super.onClosed(webSocket, code, reason);
+            Log.d(TAG, "closed");
+
+            if (mWsMsgListener != null) {
+                mWsMsgListener.onSocketClosed(code);
+            }
+        }
+
+        @Override
+        public void onFailure(WebSocket webSocket, Throwable t, Response response) {
+            super.onFailure(webSocket, t, response);
+            Log.d(TAG, "socket fail : " + t.getMessage());
+        }
+    };
 }
+
 ~~~
+---
+다음으로 [WebSocketMessageListener.java] 파일을 추가하겠습니다.
+
+- WebSocketMessageListener는 각 소켓 사용처에서 Chat 메시지, Game 메시지, Close 신호를 받기위한 리스너입니다.
+
+아래와 같이 [socket] 을 클릭한 후 마우스 오른쪽 클릭하여 
+
+[New] - [Java class]를 차례로 클릭해줍니다.
+
+아래와 같은 화면이 뜨면 [WebSocketMessageListener]를 입력하고 [Ok] 버튼을 클릭해주세요.
+
+![그림](../images/android/8_1.png)
+
+WebSocketMessageListener.java 파일이 열리면 아래 소스를 복사 & 붙여넣기 해 주세요.
+~~~
+package com.example.realtime_quiz.socket;
+
+import com.example.realtime_quiz.model.Chat;
+import com.example.realtime_quiz.model.Game;
+
+public interface WebSocketMessageListener {
+    void onGameDataReceived(Game game);
+    void onChatDataReceived(Chat chat);
+    void onSocketClosed(int code);
+}
+
+~~~
+
 ---
 
 다음으로 [NetDefine.java] 파일을 추가하겠습니다.
+
+- NetDefine에서는 웹소켓 엔드포인트 주소를 설정합니다.
 
 아래와 같이 [socket] 을 클릭한 후 마우스 오른쪽 클릭하여 
 
@@ -138,6 +269,9 @@ public class NetDefine {
     public static final String WSS_ADDRESS = "wss://자신의 websocket endpoint";
 }
 ~~~
+
+
+
 
 ### 참고 (WSS Endpoint 보는 방법)
 - [Websocket 테스트](https://github.com/yebonkim/android-realtime-quiz/blob/master/guide/AWS_websocket_test_guide.md) 상단을 참고해주세요!
