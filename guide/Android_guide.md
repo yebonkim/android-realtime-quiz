@@ -277,9 +277,61 @@ public class NetDefine {
 - [Websocket 테스트](https://github.com/yebonkim/android-realtime-quiz/blob/master/guide/AWS_websocket_test_guide.md) 상단을 참고해주세요!
 
 ---
+### 3. JoinActivity.java 변경
+WebSocketManager가 준비되었으니 그에 맞게 JoinActivity를 변경해보겠습니다!
+
+JoinActivity.java에 아래 [주석이름] - [추가할 코드] 적어두었습니다.
+
+JoinActivity.java안에서 해당 [주석이름]이 있는 곳에 [추가할 코드]를 추가해주세요.
+
+**번거로우신 분들은 [링크](https://raw.githubusercontent.com/yebonkim/android-realtime-quiz/master/android/app/src/main/java/com/example/realtime_quiz/activity/JoinActivity.java)에서 모두 복사 & 붙여넣기 해주셔도 됩니다.**
+
+#### Add WebSocket import
+~~~
+import com.example.realtime_quiz.socket.WebSocketManager;
+import com.example.realtime_quiz.socket.WebSocketMessageListener;
+~~~
+
+#### add WebSocket define code
+~~~
+WebSocketManager mWebSocketManager;
+~~~
+
+#### add WebSocket initialization code
+~~~
+mWebSocketManager = WebSocketManager.getInstance(mWsMsgListener);
+~~~
+
+#### add WebSocketMessageListener
+~~~
+WebSocketMessageListener mWsMsgListener = new WebSocketMessageListener() {
+        @Override
+        public void onGameDataReceived(Game game) {
+            goToGameActivity(mUsername);
+        }
+
+        @Override
+        public void onChatDataReceived(Chat chat) {
+            return;
+        }
+
+        @Override
+        public void onSocketClosed(int code) {
+            Toast.makeText(JoinActivity.this, getString(R.string.err_game_disconnected), Toast.LENGTH_LONG).show();
+        }
+    };
+~~~
+
+#### add send start code
+~~~
+if (mWebSocketManager != null) {
+    mWebSocketManager.sendMsg("start!");
+}
+~~~
+
+
 ### 3. GameActivity.java 변경
 
-WebSocketManager가 준비되었으니 그에 맞게 GameActivity를 변경해보겠습니다!
 
 GameActivity.java에 아래 [주석이름] - [추가할 코드] 적어두었습니다.
 
@@ -292,6 +344,7 @@ GameActivity.java안에서 해당 [주석이름]이 있는 곳에 [추가할 코
 #### add WebSocket import
 ~~~
 import com.example.realtime_quiz.socket.WebSocketManager;
+import com.example.realtime_quiz.socket.WebSocketMessageListener;
 ~~~
 
 #### add WebSocket define code
@@ -301,80 +354,45 @@ WebSocketManager webSocketManager;
 
 #### add WebSocket initialization code
 ~~~
-webSocketManager = new WebSocketManager(webSocketListener);
+mWebSocketManager = WebSocketManager.getInstance(mWsMsgListener);
+~~~
+
+#### add getting game data code
+~~~
+Game game = mWebSocketManager.getGame();
+
+if (game != null) {
+    mWsMsgListener.onGameDataReceived(game);
+}
 ~~~
 
 #### add WebSocketListener Code
 ~~~
-WebSocketListener webSocketListener = new WebSocketListener() {
+private WebSocketMessageListener mWsMsgListener = new WebSocketMessageListener() {
         @Override
-        public void onOpen(WebSocket webSocket, Response response) {
-            super.onOpen(webSocket, response);
-            Log.d(TAG, "open");
+        public void onGameDataReceived(Game game) {
+            if (game.getNowConsonant() != null) {
+                mConsonant.setText(game.getNowConsonant());
+            }
         }
 
         @Override
-        public void onMessage(WebSocket webSocket, String text) {
-            super.onMessage(webSocket, text);
-            Log.d(TAG, text);
-
-            // proper position?
-            showChatLayout();
-
-            Chat newChat = Chat.strToChat(text);
-            Game newGame = Game.strToGame(text);
-
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if(newChat != null) {
-                        adapter.addNewChat(newChat);
-                    } else if(newGame != null) {
-                        consonantTV.setText(newGame.getNowConsonant());
-                    }
-
-                    chatRV.smoothScrollToPosition(adapter.getItemCount());
-                }
-            });
+        public void onChatDataReceived(Chat chat) {
+            mAdapter.addNewChat(chat);
+            mChatList.smoothScrollToPosition(mAdapter.getItemCount());
         }
 
         @Override
-        public void onMessage(WebSocket webSocket, ByteString bytes) {
-            super.onMessage(webSocket, bytes);
-            Log.d(TAG, bytes.toString());
-        }
-
-        @Override
-        public void onClosing(WebSocket webSocket, int code, String reason) {
-            super.onClosing(webSocket, code, reason);
-            Log.d(TAG, "closing");
-        }
-
-        @Override
-        public void onClosed(WebSocket webSocket, int code, String reason) {
-            super.onClosed(webSocket, code, reason);
-            Log.d(TAG, "closed");
+        public void onSocketClosed(int code) {
+            Toast.makeText(GameActivity.this, getString(R.string.err_game_disconnected), Toast.LENGTH_LONG).show();
             finish();
-        }
-
-        @Override
-        public void onFailure(WebSocket webSocket, Throwable t, Response response) {
-            super.onFailure(webSocket, t, response);
-            Log.d(TAG, t.getMessage());
         }
     };
 ~~~ 
 
-#### add send start code
-~~~
-if(webSocketManager != null) {
-    webSocketManager.sendMsg("start!");
-}
-~~~
-
 #### add send code
 ~~~
-webSocketManager.sendMsg(newChat.toString());
+mWebSocketManager.sendMsg(newChat.toString());
 ~~~
 
 #### add onDestroy code
