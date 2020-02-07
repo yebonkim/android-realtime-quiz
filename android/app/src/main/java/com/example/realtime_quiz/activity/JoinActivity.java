@@ -5,20 +5,27 @@ import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.realtime_quiz.IntentConstant;
 import com.example.realtime_quiz.R;
+import com.example.realtime_quiz.model.Chat;
+import com.example.realtime_quiz.model.Game;
+
+// TODO : Add WebSocket import
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class JoinActivity extends AppCompatActivity {
+    @BindView(R.id.edit_username)
+    EditText mUsernameEdit;
 
-    public final static String EXTRA_USERNAME = "username";
+    String mUsername;
 
-    @BindView(R.id.usernameET)
-    EditText usernameET;
+    // TODO : add WebSocket define code
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,28 +33,32 @@ public class JoinActivity extends AppCompatActivity {
         setContentView(R.layout.activity_join);
         ButterKnife.bind(this);
 
+        // TODO : add WebSocket initialization code
     }
 
-    private boolean isValid(String str) {
-        if(str.length() == 0) {
-            return false;
-        }
+    // TODO : add WebSocketMessageListener
 
-        return true;
+    @OnClick(R.id.btn_to_game)
+    public void goToGame() {
+        mUsername = mUsernameEdit.getText().toString();
+
+        if (isValid(mUsername)) {
+            joinGame();
+        } else {
+            Toast.makeText(this, getString(R.string.err_input_again), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void joinGame() {
+        // TODO : add send start code
+    }
+
+    private boolean isValid(@NonNull String str) {
+        return !str.isEmpty();
     }
 
     private void goToGameActivity(String username) {
-        startActivity(new Intent(this, GameActivity.class).putExtra(EXTRA_USERNAME, username));
-    }
-
-    @OnClick(R.id.goToGameBtn)
-    public void goToGameBtn() {
-        String username = usernameET.getText().toString();
-
-        if(isValid(username)) {
-            goToGameActivity(username);
-        } else {
-            Toast.makeText(this, getString(R.string.reInput), Toast.LENGTH_SHORT).show();
-        }
+        startActivity(new Intent(this, GameActivity.class).putExtra(
+                IntentConstant.USERNAME, username));
     }
 }

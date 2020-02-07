@@ -1,49 +1,36 @@
 package com.example.realtime_quiz.activity;
 
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.realtime_quiz.IntentConstant;
 import com.example.realtime_quiz.R;
 import com.example.realtime_quiz.adapter.ChatAdapter;
 import com.example.realtime_quiz.model.Chat;
 import com.example.realtime_quiz.model.Game;
 // TODO : Add WebSocket import
 
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import okhttp3.Response;
-import okhttp3.WebSocket;
-import okhttp3.WebSocketListener;
-import okio.ByteString;
 
 public class GameActivity extends AppCompatActivity {
+    @BindView(R.id.edit_answer)
+    EditText mAnswerEdit;
+    @BindView(R.id.list_chat)
+    RecyclerView mChatList;
+    @BindView(R.id.text_consonant)
+    TextView mConsonant;
 
-    private static final String TAG = GameActivity.class.getSimpleName();
+    ChatAdapter mAdapter;
 
-    @BindView(R.id.answerET)
-    EditText answerET;
-    @BindView(R.id.startLayout)
-    ConstraintLayout startLayout;
-    @BindView(R.id.chatLayout)
-    ConstraintLayout chatLayout;
-    @BindView(R.id.chatRV)
-    RecyclerView chatRV;
-    @BindView(R.id.consonantTV)
-    TextView consonantTV;
-
-    String nickname;
-
-    ChatAdapter adapter;
+    String mNickname;
 
     // TODO : add WebSocket define code
 
@@ -56,59 +43,43 @@ public class GameActivity extends AppCompatActivity {
         getIntentData();
         initRecyclerView();
         // TODO : add WebSocket initialization code
+
+        // TODO : add getting game data code
     }
 
+    // TODO : add WebSocketMessageListener
+
     private void getIntentData() {
-        nickname = getIntent().getStringExtra(JoinActivity.EXTRA_USERNAME);
+        mNickname = getIntent().getStringExtra(IntentConstant.USERNAME);
     }
 
     private void initRecyclerView() {
-        adapter = new ChatAdapter();
-        chatRV.setLayoutManager(new LinearLayoutManager(this));
-        chatRV.setAdapter(adapter);
+        mAdapter = new ChatAdapter();
+        mChatList.setLayoutManager(new LinearLayoutManager(this));
+        mChatList.setAdapter(mAdapter);
     }
 
-
     private boolean isValid(String str) {
-        if(str.length() == 0) {
+        if (str.length() == 0) {
             return false;
         }
 
         return true;
     }
 
-    private void showChatLayout() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if(chatLayout.getVisibility() == View.INVISIBLE) {
-                    chatLayout.setVisibility(View.VISIBLE);
-                    startLayout.setVisibility(View.INVISIBLE);
-                }
-            }
-        });
-    }
-
-    // TODO : add WebSocketListener Code
-
-    @OnClick(R.id.startBtn)
-    public void onStartBtnClicked() {
-        // TODO : add send start code
-    }
-
-    @OnClick(R.id.sendBtn)
+    @OnClick(R.id.btn_send)
     public void onSendBtnClicked() {
-        String chatMsg = answerET.getText().toString();
+        String chatMsg = mAnswerEdit.getText().toString();
         Chat newChat;
 
-        if(isValid(chatMsg) == false) {
+        if (isValid(chatMsg) == false) {
             return;
         }
 
-        newChat = new Chat(nickname, chatMsg);
+        newChat = new Chat(mNickname, chatMsg);
 
         // TODO : add send code
-        answerET.setText("");
+        mAnswerEdit.setText("");
     }
 
     // TODO : add onDestroy code

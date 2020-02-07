@@ -20,18 +20,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class ChatAdapter extends RecyclerView.Adapter<MyRecyclerView.ViewHolder> {
+    private static final int VIEW_TYPE_ITEM = 1;
 
-    public static final int VIEW_TYPE_ITEM = 1;
-
-    ArrayList<Chat> data;
+    private ArrayList<Chat> mData;
 
     public ChatAdapter() {
-        this.data = new ArrayList<>();
-    }
-
-    public void addNewChat(Chat newChat) {
-        data.add(newChat);
-        notifyDataSetChanged();
+        this.mData = new ArrayList<>();
     }
 
     @NonNull
@@ -43,7 +37,6 @@ public class ChatAdapter extends RecyclerView.Adapter<MyRecyclerView.ViewHolder>
             case VIEW_TYPE_ITEM:
                 view = LayoutInflater.from(context).inflate(R.layout.viewholder_chat, parent, false);
                 return new ItemView(view);
-
         }
         return null;
     }
@@ -51,13 +44,13 @@ public class ChatAdapter extends RecyclerView.Adapter<MyRecyclerView.ViewHolder>
     @Override
     public void onBindViewHolder(@NonNull MyRecyclerView.ViewHolder holder, int position) {
         if (holder instanceof ViewHolderFactory.Updateable) {
-            ((ViewHolderFactory.Updateable) holder).update(data.get(position));
+            ((ViewHolderFactory.Updateable) holder).update(mData.get(position));
         }
     }
 
     @Override
     public int getItemCount() {
-        return data.size();
+        return mData.size();
     }
 
     @Override
@@ -65,27 +58,26 @@ public class ChatAdapter extends RecyclerView.Adapter<MyRecyclerView.ViewHolder>
         return VIEW_TYPE_ITEM;
     }
 
+    public void addNewChat(Chat newChat) {
+        mData.add(newChat);
+        notifyDataSetChanged();
+    }
 
     public class ItemView extends RecyclerView.ViewHolder implements ViewHolderFactory.Updateable<Chat> {
-        View view;
-        Context context;
-
-        @BindView(R.id.usernameTV)
-        TextView usernameTV;
-        @BindView(R.id.contentTV)
-        TextView contentTV;
+        @BindView(R.id.text_username)
+        TextView mUsername;
+        @BindView(R.id.text_content)
+        TextView mContent;
 
         public ItemView(View view) {
             super(view);
-            this.view = view;
-            context = view.getContext();
             ButterKnife.bind(this, view);
         }
 
         @Override
         public void update(final Chat data) {
-            usernameTV.setText(data.getUsername());
-            contentTV.setText(data.getContent());
+            mUsername.setText(data.getUsername());
+            mContent.setText(data.getContent());
         }
     }
 }
