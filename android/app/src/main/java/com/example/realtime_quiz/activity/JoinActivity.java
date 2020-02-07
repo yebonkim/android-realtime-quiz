@@ -12,6 +12,8 @@ import com.example.realtime_quiz.IntentConstant;
 import com.example.realtime_quiz.R;
 import com.example.realtime_quiz.model.Chat;
 import com.example.realtime_quiz.model.Game;
+
+// TODO : Add WebSocket import
 import com.example.realtime_quiz.socket.WebSocketManager;
 import com.example.realtime_quiz.socket.WebSocketMessageListener;
 
@@ -25,6 +27,7 @@ public class JoinActivity extends AppCompatActivity {
 
     String mUsername;
 
+    // TODO : add WebSocket define code
     WebSocketManager mWebSocketManager;
 
     @Override
@@ -33,9 +36,11 @@ public class JoinActivity extends AppCompatActivity {
         setContentView(R.layout.activity_join);
         ButterKnife.bind(this);
 
+        // TODO : add WebSocket initialization code
         mWebSocketManager = WebSocketManager.getInstance(mWsMsgListener);
     }
 
+    // TODO : add WebSocketMessageListener
     WebSocketMessageListener mWsMsgListener = new WebSocketMessageListener() {
         @Override
         public void onGameDataReceived(Game game) {

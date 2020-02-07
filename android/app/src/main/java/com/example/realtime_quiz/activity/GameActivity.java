@@ -1,13 +1,11 @@
 package com.example.realtime_quiz.activity;
 
 import android.os.Bundle;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -15,8 +13,9 @@ import com.example.realtime_quiz.IntentConstant;
 import com.example.realtime_quiz.R;
 import com.example.realtime_quiz.adapter.ChatAdapter;
 import com.example.realtime_quiz.model.Chat;
-// TODO : Add WebSocket import
 import com.example.realtime_quiz.model.Game;
+
+// TODO : Add WebSocket import
 import com.example.realtime_quiz.socket.WebSocketManager;
 import com.example.realtime_quiz.socket.WebSocketMessageListener;
 
@@ -50,6 +49,8 @@ public class GameActivity extends AppCompatActivity {
         initRecyclerView();
         // TODO : add WebSocket initialization code
         mWebSocketManager = WebSocketManager.getInstance(mWsMsgListener);
+
+        // TODO : add getting game data code
         Game game = mWebSocketManager.getGame();
 
         if (game != null) {
@@ -57,6 +58,7 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
+    // TODO : add WebSocketMessageListener
     private WebSocketMessageListener mWsMsgListener = new WebSocketMessageListener() {
         @Override
         public void onGameDataReceived(Game game) {
